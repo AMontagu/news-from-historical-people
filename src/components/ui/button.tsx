@@ -5,24 +5,26 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded text-sm font-ui tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-[var(--ink-brown-light)] border-2 border-[var(--ink-brown)] shadow-md hover:shadow-lg",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 border-2 border-[var(--ink-red)]",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border-2 border-[var(--ink-brown)] bg-[var(--parchment)] text-[var(--ink-brown)] hover:bg-[var(--parchment-dark)] hover:text-[var(--ink-black)]",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-[var(--ink-brown-light)]",
+        ghost: "hover:bg-[var(--parchment-dark)] hover:text-[var(--ink-brown)]",
         link: "text-primary underline-offset-4 hover:underline",
+        parchment: "bg-[var(--parchment-light)] text-[var(--ink-brown)] border-2 border-[var(--ink-brown)] hover:bg-[var(--parchment)] shadow-sm",
+        wax: "bg-[var(--ink-red)] text-[var(--parchment-light)] rounded-full hover:bg-[var(--ink-red-light)] shadow-md border-2 border-[var(--ink-red-light)]",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
+        sm: "h-9 rounded px-3",
+        lg: "h-11 rounded px-8",
         icon: "h-10 w-10",
       },
     },

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { HotTakeDisplay } from "@/components/HotTakeDisplay";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { DividerFlourish } from "@/components/decorations";
 import { fetchRandomArticle, generateHotTake, type NewsArticle, type DynamicFigure } from "@/lib/api";
 import { type Language, getTranslations } from "@/lib/i18n";
 
@@ -58,22 +59,39 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <header className="text-center mb-8">
-          <div className="flex justify-end mb-2">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Ornate Masthead */}
+        <header className="masthead relative">
+          <div className="flex justify-end mb-4">
             <LanguageSelector language={language} onLanguageChange={handleLanguageChange} />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+
+          {/* Decorative top flourish */}
+          <div className="flex justify-center mb-2">
+            <span className="text-2xl text-[var(--ink-brown)]">☙</span>
+          </div>
+
+          <h1 className="masthead-title">
             {t.title}
           </h1>
-          <p className="text-muted-foreground">
+
+          <p className="masthead-subtitle text-lg">
             {t.subtitle}
           </p>
+
+          <p className="masthead-date mt-2">
+            {t.established}
+          </p>
+
+          {/* Decorative bottom flourish */}
+          <div className="flex justify-center mt-3">
+            <span className="text-2xl text-[var(--ink-brown)]">❧</span>
+          </div>
         </header>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg mb-6 text-center">
-            {error}
+          <div className="proclamation text-[var(--ink-red)] text-center mb-6">
+            <p className="font-headline italic">{error}</p>
           </div>
         )}
 
@@ -86,8 +104,15 @@ function App() {
           translations={t}
         />
 
-        <footer className="mt-12 text-center text-sm text-muted-foreground">
-          <p>{t.footer}</p>
+        <DividerFlourish className="mt-10 mb-6" />
+
+        <footer className="text-center">
+          <p className="font-ui text-sm text-[var(--ink-brown-light)] tracking-wider">
+            {t.footer}
+          </p>
+          <div className="flex justify-center mt-3">
+            <span className="text-lg text-[var(--ink-brown)] opacity-50">⚜</span>
+          </div>
         </footer>
       </div>
     </div>
