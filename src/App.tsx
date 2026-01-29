@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { HotTakeDisplay } from "@/components/HotTakeDisplay";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { fetchRandomArticle, generateHotTake, type NewsArticle, type DynamicFigure } from "@/lib/api";
@@ -11,11 +11,14 @@ function App() {
   const [hotTake, setHotTake] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const initialLoadDone = useRef(false);
 
   const t = getTranslations(language);
 
-  // Load initial data on mount
+  // Load initial data on mount (useRef prevents StrictMode double-invoke)
   useEffect(() => {
+    if (initialLoadDone.current) return;
+    initialLoadDone.current = true;
     loadNewStory(language);
   }, []);
 
