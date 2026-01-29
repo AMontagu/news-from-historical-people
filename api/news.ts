@@ -39,7 +39,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log("[api/news] Category:", category, "Country:", country);
 
   try {
-    const url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=20&apiKey=${apiKey}`;
+    // Use /everything with language=fr for French news (better results)
+    // Use /top-headlines for US
+    let url: string;
+    if (country === "fr") {
+      const query = encodeURIComponent("actualité OR France OR politique OR économie OR société");
+      url = `https://newsapi.org/v2/everything?language=fr&sortBy=publishedAt&q=${query}&pageSize=20&apiKey=${apiKey}`;
+    } else {
+      url = `https://newsapi.org/v2/top-headlines?country=${country}&category=${category}&pageSize=20&apiKey=${apiKey}`;
+    }
     console.log("[api/news] Fetching from NewsAPI...");
 
     const response = await fetch(url);

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from .serializers import GenerateRequestSerializer, GenerateBestRequestSerializer
+from .serializers import GenerateRequestSerializer
 from .services.news_service import NewsService
 from .services.llm_service import LLMService
 
@@ -93,34 +93,29 @@ class GenerateBestView(APIView):
     Request body:
         {
             headline: string,
-            figures: [{ id, name, title, era, personality }],
             language: "fr" | "en" (optional, default "fr")
         }
 
     Returns:
-        { figureId: string, hotTake: string }
+        { figure: { name, title, era, avatar }, hotTake: string }
     """
 
     def post(self, request: Request) -> Response:
-        serializer = GenerateBestRequestSerializer(data=request.data)
+        headline = request.data.get("headline")
+        language = request.data.get("language", "fr")
 
-        if not serializer.is_valid():
-            logger.error(f"[api/generate-best] Invalid request: {serializer.errors}")
+        if not headline:
+            logger.error("[api/generate-best] Missing headline")
             return Response(
-                {"error": "Missing or invalid data"},
+                {"error": "Missing headline"},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        data = serializer.validated_data
-        headline = data["headline"]
-        figures = data["figures"]
-        language = data.get("language", "fr")
-
-        logger.info(f"[api/generate-best] Headline: {headline[:50]}, Figures: {len(figures)}, Language: {language}")
+        logger.info(f"[api/generate-best] Headline: {headline[:50]}, Language: {language}")
 
         try:
             service = LLMService()
-            result = service.generate_hot_take_with_best_figure(headline, figures, language)
+            result = service.generate_dynamic_hot_take(headline, language)
             return Response(result, status=status.HTTP_200_OK)
 
         except ValueError as e:

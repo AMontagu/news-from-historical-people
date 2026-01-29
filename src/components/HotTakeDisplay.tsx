@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { type HistoricalFigure } from "@/data/figures";
-import { type NewsArticle } from "@/lib/api";
+import { type NewsArticle, type DynamicFigure } from "@/lib/api";
 import { Copy, Check, Shuffle } from "lucide-react";
 import { useState } from "react";
 
@@ -12,7 +11,7 @@ interface Translations {
 }
 
 interface HotTakeDisplayProps {
-  figure: HistoricalFigure | null;
+  figure: DynamicFigure | null;
   article: NewsArticle | null;
   hotTake: string | null;
   loading: boolean;

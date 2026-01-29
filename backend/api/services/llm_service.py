@@ -88,50 +88,42 @@ Your hot take:"""
             logger.error(f"Failed to generate hot take: {e}")
             raise ValueError(f"Failed to generate hot take: {str(e)}")
 
-    def generate_hot_take_with_best_figure(
-        self, headline: str, figures: list[FigureData], language: str = "fr"
-    ) -> dict:
+    def generate_dynamic_hot_take(self, headline: str, language: str = "fr") -> dict:
         """
-        Let the LLM pick the funniest figure and generate their reaction in one call.
+        Let the LLM pick ANY historical figure it thinks would be funniest.
 
         Args:
             headline: The news headline
-            figures: List of available figures with id, name, title, era, personality
             language: Language code ('fr' or 'en')
 
         Returns:
-            Dict with figureId and hotTake
+            Dict with figure (name, title, era, avatar) and hotTake
         """
         import json
+        import re
 
-        logger.info(f"Generating best hot take for: {headline[:50]}... (lang={language})")
-
-        figures_list = "\n".join(
-            f'- ID: "{f["id"]}" | {f["name"]} ({f["title"]}, {f["era"]}): {f["personality"]}'
-            for f in figures
-        )
+        logger.info(f"Generating dynamic hot take for: {headline[:50]}... (lang={language})")
 
         language_instruction = (
-            "IMPORTANT: The hot_take MUST be written in French."
+            "IMPORTANT: All text fields (name, title, hot_take) MUST be written in French."
             if language == "fr"
-            else "IMPORTANT: The hot_take MUST be written in English."
+            else "IMPORTANT: All text fields (name, title, hot_take) MUST be written in English."
         )
 
-        prompt = f"""You are a comedy writer. Given this news headline and a list of historical figures, pick the ONE figure who would give the FUNNIEST reaction to this news.
+        prompt = f"""You are a comedy writer. Given this news headline, think of the FUNNIEST historical figure who could react to it.
 
 NEWS HEADLINE: "{headline}"
 
-AVAILABLE FIGURES:
-{figures_list}
-
 Your task:
-1. Pick the figure whose personality/era creates the funniest contrast with this modern news
-2. Write their reaction as that character (2-3 sentences, in their voice, anachronistic and witty)
+1. Think of ANY historical figure from history whose personality/era would create the funniest contrast with this modern news
+2. Be creative! Consider politicians, artists, scientists, warriors, philosophers, royalty, inventors, etc.
+3. Write their reaction as that character (2-3 sentences, in their voice, anachronistic and witty)
+4. Pick an appropriate emoji that represents this figure
 
 {language_instruction}
 
 Respond in this exact JSON format (no markdown, no code blocks):
-{{"figure_id": "the-id-here", "hot_take": "The funny reaction here"}}"""
+{{"name": "Full Name", "title": "Their historical title", "era": "Birth-Death years", "avatar": "single emoji", "hot_take": "The funny reaction here"}}"""
 
         try:
             response = self.model.invoke(prompt)
@@ -139,23 +131,23 @@ Respond in this exact JSON format (no markdown, no code blocks):
             logger.info(f"Raw response: {content[:200]}")
 
             # Parse JSON from response
-            import re
             json_match = re.search(r'\{[\s\S]*\}', content)
             if not json_match:
                 raise ValueError("No JSON found in response")
 
             parsed = json.loads(json_match.group())
-            figure_id = parsed.get("figure_id")
+
+            figure = {
+                "name": parsed.get("name"),
+                "title": parsed.get("title"),
+                "era": parsed.get("era"),
+                "avatar": parsed.get("avatar", "🎭"),
+            }
             hot_take = parsed.get("hot_take")
 
-            # Validate figure_id
-            valid_ids = [f["id"] for f in figures]
-            if figure_id not in valid_ids:
-                logger.warning(f"Invalid figure_id: {figure_id}, using first figure")
-                figure_id = figures[0]["id"]
-
-            return {"figureId": figure_id, "hotTake": hot_take}
+            logger.info(f"Generated figure: {figure['name']}")
+            return {"figure": figure, "hotTake": hot_take}
 
         except Exception as e:
-            logger.error(f"Failed to generate best hot take: {e}")
-            raise ValueError(f"Failed to generate best hot take: {str(e)}")
+            logger.error(f"Failed to generate dynamic hot take: {e}")
+            raise ValueError(f"Failed to generate dynamic hot take: {str(e)}")

@@ -20,7 +20,8 @@ class Article(TypedDict):
 class NewsService:
     """Service for fetching news from NewsAPI."""
 
-    BASE_URL = "https://newsapi.org/v2/top-headlines"
+    TOP_HEADLINES_URL = "https://newsapi.org/v2/top-headlines"
+    EVERYTHING_URL = "https://newsapi.org/v2/everything"
 
     def __init__(self):
         self.api_key = settings.NEWS_API_KEY
@@ -32,7 +33,9 @@ class NewsService:
         page_size: int = 20
     ) -> List[Article]:
         """
-        Fetch top headlines from NewsAPI.
+        Fetch news from NewsAPI.
+        Uses /everything endpoint with language param for non-US countries.
+        Uses /top-headlines for US (better results).
 
         Returns filtered articles (removes [Removed] titles).
         """
@@ -40,17 +43,33 @@ class NewsService:
             logger.error("NEWS_API_KEY not configured")
             raise ValueError("NEWS_API_KEY not configured")
 
-        params = {
-            "country": country,
-            "category": category,
-            "pageSize": page_size,
-            "apiKey": self.api_key,
-        }
+        # Map country to language for /everything endpoint
+        lang_map = {"fr": "fr", "us": "en", "gb": "en", "de": "de", "es": "es", "it": "it"}
+        language = lang_map.get(country, "en")
 
-        logger.info(f"Fetching news: category={category}, country={country}")
+        # Use /everything for French (better results), /top-headlines for US
+        if country == "fr":
+            url = self.EVERYTHING_URL
+            params = {
+                "language": "fr",
+                "sortBy": "publishedAt",
+                "pageSize": page_size,
+                "apiKey": self.api_key,
+                "q": "actualité OR France OR politique OR économie OR société",
+            }
+        else:
+            url = self.TOP_HEADLINES_URL
+            params = {
+                "country": country,
+                "category": category,
+                "pageSize": page_size,
+                "apiKey": self.api_key,
+            }
+
+        logger.info(f"Fetching news: country={country}, language={language}, url={url}")
 
         try:
-            response = requests.get(self.BASE_URL, params=params, timeout=10)
+            response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             data = response.json()
 
