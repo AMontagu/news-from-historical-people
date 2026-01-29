@@ -22,10 +22,10 @@ You have just been told about this modern news headline: "{headline}"
 Your personality: {personality}
 
 React to this news as if you were really {name}. Be:
-- Anachronistic (interpret through your historical lens)
-- Funny and witty
+- Hilariously anachronistic (interpret through your historical lens)
+- Punchy and witty (aim for a snappy one-liner or punchline)
 - In character (use speech patterns fitting your era)
-- Brief (2-3 sentences max)
+- VERY brief (1-2 sentences max, shorter is better!)
 
 {language_instruction}
 
@@ -115,15 +115,16 @@ Your hot take:"""
 NEWS HEADLINE: "{headline}"
 
 Your task:
-1. Think of ANY historical figure from history whose personality/era would create the funniest contrast with this modern news
+1. Think of ANY historical figure whose personality/era would create the funniest contrast with this modern news
 2. Be creative! Consider politicians, artists, scientists, warriors, philosophers, royalty, inventors, etc.
-3. Write their reaction as that character (2-3 sentences, in their voice, anachronistic and witty)
-4. Pick an appropriate emoji that represents this figure
+3. Write their reaction as that character - AIM FOR A PUNCHY ONE-LINER (1-2 sentences max, shorter is funnier!)
+4. Make it absurd, witty, with great comedic timing
+5. Pick an appropriate emoji that represents this figure
 
 {language_instruction}
 
 Respond in this exact JSON format (no markdown, no code blocks):
-{{"name": "Full Name", "title": "Their historical title", "era": "Birth-Death years", "avatar": "single emoji", "hot_take": "The funny reaction here"}}"""
+{{"name": "Full Name", "title": "Their historical title", "era": "Birth-Death years", "avatar": "single emoji", "hot_take": "The punchy one-liner here"}}"""
 
         try:
             response = self.model.invoke(prompt)
